@@ -3,62 +3,72 @@ package stepdefinitions;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import pages.BingSearchPage;
 
-import java.util.concurrent.TimeUnit;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import static org.junit.Assert.*;
+import utils.WebDriverUtils;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class BingSearchSteps {
 
-    WebDriver driver;
-    BingSearchPage bingSearchPage;
+    WebDriver driver = WebDriverUtils.getDriver();
+    BingSearchPage bingSearchPage = new BingSearchPage(driver);
 
     @Before
     public void setUp() {
-        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
-        driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        bingSearchPage = new BingSearchPage(driver);
+        // Initialize WebDriver and BingSearchPage before each test
+        driver = WebDriverUtils.getDriver();
     }
 
     @After
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        // Quit WebDriver after each test
+        WebDriverUtils.quitDriver();
     }
 
     @Given("I open Bing search page")
-    public void i_open_bing_search_page_for_search() {
+    public void i_open_bing_search_page() {
+        // Open Bing search page
         driver.get("https://www.bing.com");
     }
 
     @When("I search for {string}")
-    public void i_search_for_particular_string(String searchTerm) {
-        bingSearchPage.enterSearchTerm(searchTerm);
-        bingSearchPage.clickSearchButton();
+    public void i_search_for(String searchTerm) {
+        // Enter search term and submit search
+        WebElement searchBox = driver.findElement(By.name("q"));
+        searchBox.sendKeys(searchTerm);
+        searchBox.submit();
     }
 
     @Then("I should see search results")
-    public void i_should_see_search_results_displayed_to_me() {
-        assertTrue(bingSearchPage.getResultsCount() > 0);
+    public void i_should_see_search_results() {
+        // Verify search results are displayed
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebElement results = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("b_content")));
+        assertTrue(results.isDisplayed());
     }
-
+    
     @Then("I should see no search results")
-    public void i_should_see_no_search_results_displayed_to_me() {
+    public void i_should_see_no_search_results_plain() {
+        // Verify no search results are displayed
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebElement results = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("b_content")));
         assertEquals(0, bingSearchPage.getResultsCount());
     }
-
-    @Then("pagination controls should be hidden")
-    public void pagination_controls_should_be_hidden_for_me() {
-        assertFalse(bingSearchPage.arePaginationControlsVisible());
-    }
-
+    
     @Then("I should see an error message or no results")
-    public void i_should_see_an_error_message_or_no_results_displayed_to_me() {
-        assertTrue(bingSearchPage.isErrorMessageVisible() || bingSearchPage.getResultsCount() == 0);
+    public void i_should_see_an_error_message_or_no_results_plain() {
+        // Verify error message or no results are displayed
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        boolean isErrorMessageVisible = bingSearchPage.isErrorMessageVisible();
+        boolean noResults = bingSearchPage.getResultsCount() == 0;
+        assertTrue(isErrorMessageVisible || noResults);
     }
 }

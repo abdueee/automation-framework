@@ -1,4 +1,4 @@
-package stepdefinitions;
+package TestRunner;
 
 import org.junit.runner.RunWith;
 import io.cucumber.junit.Cucumber;
@@ -12,4 +12,5 @@ import io.cucumber.junit.CucumberOptions;
     monochrome = true // Output readable format
 )
 public class TestRunner {
+    // This class will be used as the entry point for running the Cucumber tests.
 }
