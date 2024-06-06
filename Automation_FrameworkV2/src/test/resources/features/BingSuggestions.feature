@@ -18,5 +18,5 @@ Feature: Bing Search Suggestions
 
   Scenario: Search with a very long partial string
     Given I open Bing search page for suggestions functionality
-    When I enter partial search term "thisisaverylongpartialsearchtermidontknowwhattoputherepleasehelpmeimcrying" in the search box
+    When I enter partial search term "thisisaverylongpartialsearchtermidoubtanyonewillactuallyseethisimveryhungrygonnaorderburgerking" in the search box
     Then I should see no search suggestions dropdown
